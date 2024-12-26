@@ -7,11 +7,36 @@ class perpetualTimer():
       self.timeBetweenCallbacks=timeBetweenCallbacks
       self.hFunction = hFunction
       self.thread = Timer(self.timeBetweenCallbacks,self.handle_function)
+      self.running = True
+
+   def Stop(self):
+      self.running = False
 
    def handle_function(self):
       self.hFunction()
-      self.thread = Timer(self.timeBetweenCallbacks,self.handle_function)
+      #The timer carrys on each time because it makes a new one each time in the handling function.
+      #Stop the timer just don't make the new timer!!!
+      if(self.running == True):
+        self.thread = Timer(self.timeBetweenCallbacks,self.handle_function)
+        self.thread.daemon = True 
+        self.thread.start()
+
+   def start(self):
       self.thread.start()
+
+   def cancel(self):
+      self.thread.cancel()
+
+#Like the class above, but will only call the callback function one time before the thread dies.
+class DelayedFunctionCall():
+
+   def __init__(self,timeBetweenCallbacks,hFunction):
+      self.timeBetweenCallbacks=timeBetweenCallbacks
+      self.hFunction = hFunction
+      self.thread = Timer(self.timeBetweenCallbacks,self.handle_function)
+
+   def handle_function(self):
+      self.hFunction()
 
    def start(self):
       self.thread.start()

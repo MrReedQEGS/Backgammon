@@ -129,10 +129,8 @@ def OneSecondCallback():
 def DiceCallback():
     global diceRolling,myDiceTimer
     print("here")
-    myDiceTimer.cancel()
-    myDiceTimer = None
-    #Turn off the dice timer!
-    diceRolling = False
+    myDiceTimer.Stop()
+    diceRolling = False  #Turn of dice animation
 
 gameTime = 0
 gameTimeSurface = my_font.render("Time elapsed : {}".format(gameTime), False, (0, 0, 0))
@@ -140,6 +138,7 @@ DELAY_1 = 1
 myOneSecondTimer = None
 if(myOneSecondTimer == None):
     myOneSecondTimer = perpetualTimer(DELAY_1,OneSecondCallback)
+    myOneSecondTimer.thread.daemon = True
     myOneSecondTimer.start()
 
 #Dice callback timer
@@ -341,6 +340,7 @@ def UndoButtonCallback():
 def RollButtonCallback():
     global diceRolling,myDiceTimer
     myDiceTimer = perpetualTimer(DELAY_DICE,DiceCallback)
+    myDiceTimer.thread.daemon = True
     myDiceTimer.start()
     diceRolling = True
     pygame.mixer.Sound.play(rollSound)
