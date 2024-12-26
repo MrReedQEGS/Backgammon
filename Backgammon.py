@@ -223,6 +223,7 @@ def HandleInput(running):
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             currentMousePos = pygame.mouse.get_pos()
+            print(currentMousePos)
             
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT_MOUSE_BUTTON:
                 #print ("You pressed the right mouse button")
