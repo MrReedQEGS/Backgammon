@@ -131,7 +131,6 @@ def DiceCallback():
     myDiceTimer.cancel()
     #Turn off the dice timer!
     diceRolling = False
-    
 
 gameTime = 0
 gameTimeSurface = my_font.render("Time elapsed : {}".format(gameTime), False, (0, 0, 0))
