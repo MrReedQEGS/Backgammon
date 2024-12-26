@@ -256,7 +256,7 @@ def HandleInput(running):
 
 def UndoButtonCallback():
     print("undo pressed...")
-    #PutPiecesInTheBox()
+    PutPiecesInTheStartPositions()
     
 def RollButtonCallback():
     SetRandomDiceAngleAndPos()
@@ -283,7 +283,7 @@ def DrawGreenLinesOverTheBoard(width):
         for i in range(GAMEROWS):
             pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0], TOP_LEFT[1]+i*GRID_SIZE_Y),(TOP_LEFT[0]+(GAMECOLS-1)*GRID_SIZE_X, TOP_LEFT[1]+i*GRID_SIZE_Y),width)
 
-def PutPiecesInTheBox():
+def PutPiecesInTheStartPositions():
     global allPieces
     allPieces = []
     for i in range(12):
@@ -317,7 +317,7 @@ theInfoButton = MyClickableImageButton(BUTTON_X_VALUE,BUTTON_Y_VALUE,infoImage,i
 theRollButton = MyClickableImageButton(302,BUTTON_Y_VALUE,rollImage,rollGreyImage,surface,RollButtonCallback)
 
 allPieces = []
-PutPiecesInTheBox()
+PutPiecesInTheStartPositions()
 
 #game loop
 while running:
