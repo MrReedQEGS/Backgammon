@@ -5,6 +5,7 @@
 #
 #  Sounds 
 #  https://pixabay.com/sound-effects/search/clicks/
+#  https://audiotrimmer.com/
 #
 #  Music
 #  https://pixabay.com/music/search/relaxing%20game%20music/
@@ -73,9 +74,19 @@ muteImageName = "./images/Mute.jpg"
 muteImageGreyName = "./images/MuteGrey.jpg"
 infoImageName = "./images/Info.jpg"
 infoImageGreyName = "./images/InfoGrey.jpg"
+rollImageName = "./images/Roll.jpg"
+rollImageGreyName = "./images/RollGrey.jpg"
 
 player1PieceImageName = "./images/player1Piece.png"
 player2PieceImageName = "./images/player2Piece.png"
+
+#dice
+dice1ImageName = "./images/dice1.jpg"
+dice2ImageName = "./images/dice2.jpg"
+dice3ImageName = "./images/dice3.jpg"
+dice4ImageName = "./images/dice4.jpg"
+dice5ImageName = "./images/dice5.jpg"
+dice6ImageName = "./images/dice6.jpg"
 
 PIECE_SIZE = 20
 draggingPiece = None
@@ -83,6 +94,7 @@ draggingPiece = None
 #sounds
 pygame.mixer.init()
 clickSound = pygame.mixer.Sound("./sounds/click.mp3")
+rollSound = pygame.mixer.Sound("./sounds/dicerollshort.mp3")
 pygame.mixer.music.load("./sounds/relaxing-music.mp3") 
 
 musicOn = False
@@ -115,6 +127,21 @@ if(myOneSecondTimer == None):
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
+
+def SetRandomDiceAngleAndPos():
+
+    global firstDiceX,firstDiceY,secondDiceX,secondDiceY,firstDiceAngle,secondDiceAngle,currentFirstDiceImage,currentSecondDiceImage
+
+    firstDiceX = random.randint(315,335)
+    firstDiceY = random.randint(410,440)
+    secondDiceX = random.randint(315,335)
+    secondDiceY = random.randint(490,510)
+    firstDiceAngle = random.randint(0,180)
+    secondDiceAngle = random.randint(0,180)
+
+    currentFirstDiceImage = random.choice(diceList)
+    currentSecondDiceImage = random.choice(diceList)
+
 def TurnOffTimers():
         
     global myOneSecondTimer
@@ -127,6 +154,8 @@ def TurnOffTimers():
 def LoadImages():
     global backImage,undoImage,undoGreyImage,muteImage,muteGreyImage
     global infoImage,infoGreyImage,player1PieceImage,player2PieceImage
+    global dice1Image,dice2Image,dice3Image,dice4Image,dice5Image,dice6Image
+    global currentFirstDiceImage,currentSecondDiceImage,diceList,rollImage,rollGreyImage
  
     backImage = pygame.image.load(backImageName).convert()
 
@@ -148,6 +177,21 @@ def LoadImages():
     muteGreyImage = pygame.image.load(muteImageGreyName).convert()
     infoImage = pygame.image.load(infoImageName).convert()
     infoGreyImage = pygame.image.load(infoImageGreyName).convert()
+    rollImage = pygame.image.load(rollImageName).convert()
+    rollGreyImage = pygame.image.load(rollImageGreyName).convert()
+
+    #dice time!
+    dice1Image = pygame.image.load(dice1ImageName).convert_alpha()
+    dice2Image = pygame.image.load(dice2ImageName).convert_alpha()
+    dice3Image = pygame.image.load(dice3ImageName).convert_alpha()
+    dice4Image = pygame.image.load(dice4ImageName).convert_alpha()
+    dice5Image = pygame.image.load(dice5ImageName).convert_alpha()
+    dice6Image = pygame.image.load(dice6ImageName).convert_alpha()
+
+    diceList = [dice1Image,dice2Image,dice3Image,dice4Image,dice5Image,dice6Image]
+
+    currentFirstDiceImage = dice1Image
+    currentSecondDiceImage = dice2Image
         
 def WhatSquareAreWeIn(aPosition):
     #Find out what square somebody clicked on.
@@ -204,8 +248,6 @@ def HandleInput(running):
             #Let go of a piece if we have one
             if(draggingPiece != None):
                 pygame.mixer.Sound.play(clickSound)
-                somePos = draggingPiece.GetPos()
-
                 dropLocation = [TOP_LEFT[0] + currentSquare[0]*GRID_SIZE_X+7,TOP_LEFT[1] + currentSquare[1]*GRID_SIZE_Y+2]
                 draggingPiece.SetPos(dropLocation)
                 draggingPiece = None
@@ -214,8 +256,12 @@ def HandleInput(running):
 
 def UndoButtonCallback():
     print("undo pressed...")
-    PutPiecesInTheBox()
+    #PutPiecesInTheBox()
     
+def RollButtonCallback():
+    SetRandomDiceAngleAndPos()
+    pygame.mixer.Sound.play(rollSound)
+
 def MuteButtonCallback():
     global musicOn
     if(musicOn):
@@ -263,9 +309,12 @@ pygame.init()
 
 LoadImages()
 
+SetRandomDiceAngleAndPos()
+
 theUndoButton = MyClickableImageButton(BUTTON_X_VALUE + 30*2,BUTTON_Y_VALUE,undoImage,undoGreyImage,surface,UndoButtonCallback)
 theMuteButton = MyClickableImageButton(BUTTON_X_VALUE + 30,BUTTON_Y_VALUE,muteImage,muteGreyImage,surface,MuteButtonCallback)
 theInfoButton = MyClickableImageButton(BUTTON_X_VALUE,BUTTON_Y_VALUE,infoImage,infoGreyImage,surface,InfoButtonCallback)
+theRollButton = MyClickableImageButton(302,BUTTON_Y_VALUE,rollImage,rollGreyImage,surface,RollButtonCallback)
 
 allPieces = []
 PutPiecesInTheBox()
@@ -283,9 +332,17 @@ while running:
     theUndoButton.DrawSelf()
     theMuteButton.DrawSelf()
     theInfoButton.DrawSelf()
+    theRollButton.DrawSelf()
 
     running = HandleInput(running)
-   
+
+    #Draw the dice
+    rotated_dice1 = pygame.transform.rotate(currentFirstDiceImage,firstDiceAngle)
+    surface.blit(rotated_dice1, (firstDiceX, firstDiceY))
+
+    rotated_dice2 = pygame.transform.rotate(currentSecondDiceImage,secondDiceAngle)
+    surface.blit(rotated_dice2, (secondDiceX, secondDiceY))
+       
     #We may be dragging a particular piece!
     currentMousePos = pygame.mouse.get_pos()    
     if(draggingPiece != None):  
