@@ -245,7 +245,7 @@ def HandleInput(running):
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             currentMousePos = pygame.mouse.get_pos()
-            print(currentMousePos)
+            #print(currentMousePos)
             
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT_MOUSE_BUTTON:
                 #print ("You pressed the right mouse button")
@@ -253,14 +253,37 @@ def HandleInput(running):
                     if(piece.ClickedOnMe(currentMousePos)):
                         piece._king = not piece._king
             else:
-                #did we click on a piece?
-                for piece in allPieces:
-                    if(piece.ClickedOnMe(currentMousePos)):
-                        draggingPiece = piece
-                        #The last piece in the allpieces list is draw last, so move the dragged one to last
-                        #in the list to make it draw on top of every other piece as you drag it...simples!
-                        allPieces.remove(draggingPiece)
-                        allPieces.append(draggingPiece)
+
+                #did we click on the "side area"?
+                #If so then remove a piece from the side area and put it on the mouse cursor ready to drop
+                 #if it is a black piece the check we are not trying to put it on its side
+                if(currentMousePos[0]>=350 and currentMousePos[0]<=380 and
+                currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
+                    if(player1PiecesOnSide > 0):
+                        player1PiecesOnSide = player1PiecesOnSide - 1
+
+                        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player1")
+                        allPieces.append(someGamePiece)
+                        draggingPiece = someGamePiece
+                elif(currentMousePos[0]>=296 and currentMousePos[0]<=327 and
+                currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
+                    if(player2PiecesOnSide > 0):
+                        player2PiecesOnSide = player2PiecesOnSide - 1
+
+                        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player2")
+                        allPieces.append(someGamePiece)
+                        draggingPiece = someGamePiece
+                    
+                else:
+
+                    #did we click on a piece?
+                    for piece in allPieces:
+                        if(piece.ClickedOnMe(currentMousePos)):
+                            draggingPiece = piece
+                            #The last piece in the allpieces list is draw last, so move the dragged one to last
+                            #in the list to make it draw on top of every other piece as you drag it...simples!
+                            allPieces.remove(draggingPiece)
+                            allPieces.append(draggingPiece)
 
            
         elif event.type == pygame.MOUSEBUTTONUP:
