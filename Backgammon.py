@@ -256,7 +256,15 @@ def HandleInput(running):
 
 def UndoButtonCallback():
     print("undo pressed...")
-    PutPiecesInTheStartPositions()
+
+    #Use a TKINTER message box :)
+    #Turn events off and then back on to stop pygame picking up the mouse click too!
+    pygame.event.set_blocked(pygame.MOUSEBUTTONUP) 
+    answer = messagebox.askyesno("Question","Do you really to reset the whole game?")
+    if(answer):
+        PutPiecesInTheStartPositions()
+    pygame.event.set_allowed(None)
+
     
 def RollButtonCallback():
     SetRandomDiceAngleAndPos()
@@ -286,18 +294,38 @@ def DrawGreenLinesOverTheBoard(width):
 def PutPiecesInTheStartPositions():
     global allPieces
     allPieces = []
-    for i in range(12):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+6*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
+
+    for i in range(5):
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
+        allPieces.append(someGamePiece)
+    for i in range(2):
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
         allPieces.append(someGamePiece)
     for i in range(3):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i+16)*GRID_SIZE_Y+2],surface)
         allPieces.append(someGamePiece)
+    for i in range(5):
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface)
+        allPieces.append(someGamePiece)
+
     for i in range(3):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7*GRID_SIZE_X+7, TOP_LEFT[1] + (i+3)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
         allPieces.append(someGamePiece)
-    for i in range(12):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+8*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
+
+    for i in range(5):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
         allPieces.append(someGamePiece)
+
+    for i in range(5):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface)
+        allPieces.append(someGamePiece)
+
+    for i in range(2):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i+17)*GRID_SIZE_Y+2],surface)
+        allPieces.append(someGamePiece)
+    
+    
+
    
     
     
