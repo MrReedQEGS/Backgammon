@@ -51,6 +51,13 @@ SCREEN_HEIGHT = 645
 BUTTON_X_VALUE = 587
 BUTTON_Y_VALUE  = 614
 
+PLAYER_SIDE_PIECE_HEIGHT = 8
+player1PiecesOnSide = 0
+PLAYER1_SIDE_PIECE_X = 352
+PLAYER1_SIDE_PIECE_Y = 358
+player2PiecesOnSide = 0
+PLAYER2_SIDE_PIECE_X = 298
+
 gridLinesOn = False
 
 GAME_TIME_X = 2
@@ -78,7 +85,9 @@ rollImageName = "./images/Roll.jpg"
 rollImageGreyName = "./images/RollGrey.jpg"
 
 player1PieceImageName = "./images/player1Piece.png"
+player1SidePieceImageName = "./images/player1PieceSide.png"
 player2PieceImageName = "./images/player2Piece.png"
+player2SidePieceImageName = "./images/player2PieceSide.png"
 
 #dice
 dice1ImageName = "./images/dice1.jpg"
@@ -156,6 +165,7 @@ def LoadImages():
     global infoImage,infoGreyImage,player1PieceImage,player2PieceImage
     global dice1Image,dice2Image,dice3Image,dice4Image,dice5Image,dice6Image
     global currentFirstDiceImage,currentSecondDiceImage,diceList,rollImage,rollGreyImage
+    global player1PieceSideImage,player2PieceSideImage
  
     backImage = pygame.image.load(backImageName).convert()
 
@@ -166,10 +176,22 @@ def LoadImages():
     player1PieceImage.set_colorkey((255,255,255))
     player1PieceImage.convert_alpha()
 
+    player1PieceSideImage = pygame.image.load(player1SidePieceImageName)
+    player1PieceSideImage = pygame.transform.scale(player1PieceSideImage, (28, PLAYER_SIDE_PIECE_HEIGHT))  #change size first before doing alpha things
+    player1PieceSideImage.set_colorkey((255,255,255))
+    player1PieceSideImage.convert_alpha()
+
     player2PieceImage = pygame.image.load(player2PieceImageName)
     player2PieceImage = pygame.transform.scale(player2PieceImage, (PIECESIZE, PIECESIZE))  #change size first before doing alpha things
     player2PieceImage.set_colorkey((255,255,255))
     player2PieceImage.convert_alpha()
+
+    player2PieceSideImage = pygame.image.load(player2SidePieceImageName)
+    player2PieceSideImage = pygame.transform.scale(player2PieceSideImage, (28, PLAYER_SIDE_PIECE_HEIGHT))  #change size first before doing alpha things
+    player2PieceSideImage.set_colorkey((255,255,255))
+    player2PieceSideImage.convert_alpha()
+
+    
     
     undoImage = pygame.image.load(undoImageName).convert()
     undoGreyImage = pygame.image.load(undoImageGreyName).convert()
@@ -214,7 +236,7 @@ def WhatSquareAreWeIn(aPosition):
 
 def HandleInput(running):
     
-    global waitingForYesNo,draggingPiece
+    global draggingPiece,player1PiecesOnSide,player2PiecesOnSide
 
     for event in pygame.event.get():
 
@@ -248,9 +270,22 @@ def HandleInput(running):
 
             #Let go of a piece if we have one
             if(draggingPiece != None):
-                pygame.mixer.Sound.play(clickSound)
-                dropLocation = [TOP_LEFT[0] + currentSquare[0]*GRID_SIZE_X+7,TOP_LEFT[1] + currentSquare[1]*GRID_SIZE_Y+2]
-                draggingPiece.SetPos(dropLocation)
+                
+                #if it is a black piece the check we are not trying to put it on its side
+                if(currentMousePos[0]>=286 and currentMousePos[0]<=410 and
+                currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
+                    if(draggingPiece._player == "player1"):
+                        player1PiecesOnSide = player1PiecesOnSide + 1
+                    else:
+                        player2PiecesOnSide = player2PiecesOnSide + 1
+                    
+                    allPieces.remove(draggingPiece)
+
+                else:
+                    pygame.mixer.Sound.play(clickSound)
+                    dropLocation = [TOP_LEFT[0] + currentSquare[0]*GRID_SIZE_X+7,TOP_LEFT[1] + currentSquare[1]*GRID_SIZE_Y+2]
+                    draggingPiece.SetPos(dropLocation)
+
                 draggingPiece = None
                   
     return running
@@ -293,43 +328,41 @@ def DrawGreenLinesOverTheBoard(width):
             pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0], TOP_LEFT[1]+i*GRID_SIZE_Y),(TOP_LEFT[0]+(GAMECOLS-1)*GRID_SIZE_X, TOP_LEFT[1]+i*GRID_SIZE_Y),width)
 
 def PutPiecesInTheStartPositions():
-    global allPieces
+    global allPieces,player1PiecesOnSide,player2PiecesOnSide
     allPieces = []
 
+    player1PiecesOnSide = 0
+    player2PiecesOnSide = 0
+
+
     for i in range(5):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player2")
         allPieces.append(someGamePiece)
     for i in range(2):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player2")
         allPieces.append(someGamePiece)
     for i in range(3):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i+16)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i+16)*GRID_SIZE_Y+2],surface,"player2")
         allPieces.append(someGamePiece)
     for i in range(5):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface,"player2")
         allPieces.append(someGamePiece)
 
     for i in range(3):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player1")
         allPieces.append(someGamePiece)
 
     for i in range(5):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player1")
         allPieces.append(someGamePiece)
 
     for i in range(5):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface,"player1")
         allPieces.append(someGamePiece)
 
     for i in range(2):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i+17)*GRID_SIZE_Y+2],surface)
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i+17)*GRID_SIZE_Y+2],surface,"player1")
         allPieces.append(someGamePiece)
-    
-    
-
-   
-    
-    
 
 ##############################################################################
 # MAIN
@@ -362,6 +395,13 @@ while running:
     theMuteButton.DrawSelf()
     theInfoButton.DrawSelf()
     theRollButton.DrawSelf()
+
+    #Draw the pieces that are on their side
+    for i in range(player1PiecesOnSide):
+        surface.blit(player1PieceSideImage, (PLAYER1_SIDE_PIECE_X, PLAYER1_SIDE_PIECE_Y-i*(PLAYER_SIDE_PIECE_HEIGHT+2)))
+
+    for i in range(player2PiecesOnSide):
+        surface.blit(player2PieceSideImage, (PLAYER2_SIDE_PIECE_X, PLAYER1_SIDE_PIECE_Y-i*(PLAYER_SIDE_PIECE_HEIGHT+2)))
 
     running = HandleInput(running)
 

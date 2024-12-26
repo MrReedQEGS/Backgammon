@@ -3,7 +3,7 @@ import pygame
 # CLASSES
 ##############################################################################
 class Piece(pygame.sprite.Sprite): 
-    def __init__(self, newImage, newPos,newParentSurface): 
+    def __init__(self, newImage, newPos,newParentSurface,newPlayer): 
         super().__init__() 
 
         self._image = newImage
@@ -11,6 +11,7 @@ class Piece(pygame.sprite.Sprite):
         self._rect = self._image.get_rect()
         self._rect.topleft=(newPos[0],newPos[1])
         self._parentSurface = newParentSurface
+        self._player = newPlayer
         self._king = False
 
     def DrawSelf(self):
