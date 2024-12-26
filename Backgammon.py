@@ -96,6 +96,8 @@ dice4ImageName = "./images/dice4.jpg"
 dice5ImageName = "./images/dice5.jpg"
 dice6ImageName = "./images/dice6.jpg"
 
+diceRolling = False
+
 PIECE_SIZE = 20
 draggingPiece = None
 
@@ -124,6 +126,13 @@ def OneSecondCallback():
     global gameTime
     gameTime = gameTime + 1
 
+def DiceCallback():
+    global diceRolling,myDiceTimer
+    myDiceTimer.cancel()
+    #Turn off the dice timer!
+    diceRolling = False
+    
+
 gameTime = 0
 gameTimeSurface = my_font.render("Time elapsed : {}".format(gameTime), False, (0, 0, 0))
 DELAY_1 = 1
@@ -132,6 +141,10 @@ if(myOneSecondTimer == None):
     myOneSecondTimer = perpetualTimer(DELAY_1,OneSecondCallback)
     myOneSecondTimer.start()
 
+#Dice callback timer
+DELAY_DICE = 0.5
+myDiceTimer = None
+    
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
@@ -325,7 +338,11 @@ def UndoButtonCallback():
 
     
 def RollButtonCallback():
-    SetRandomDiceAngleAndPos()
+    global diceRolling,myDiceTimer
+    myDiceTimer = None
+    myDiceTimer = perpetualTimer(DELAY_DICE,DiceCallback)
+    myDiceTimer.start()
+    diceRolling = True
     pygame.mixer.Sound.play(rollSound)
 
 def MuteButtonCallback():
@@ -428,6 +445,8 @@ while running:
     running = HandleInput(running)
 
     #Draw the dice
+    if(diceRolling):
+        SetRandomDiceAngleAndPos()
     rotated_dice1 = pygame.transform.rotate(currentFirstDiceImage,firstDiceAngle)
     surface.blit(rotated_dice1, (firstDiceX, firstDiceY))
 
