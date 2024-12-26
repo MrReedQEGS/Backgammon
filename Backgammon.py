@@ -21,7 +21,7 @@ from UsefulClasses import perpetualTimer,MyGameGrid,MyClickableImageButton
 import tkinter
 from tkinter import messagebox
 
-from TheGameClasses import Piece
+from BackgammonClasses import Piece
 
 ##############################################################################
 # VARIABLES
@@ -37,8 +37,8 @@ RIGHT_MOUSE_BUTTON = 3
 
 DEBUG_ON = False
 
-GRID_SIZE_X = 52
-GRID_SIZE_Y = 52
+GRID_SIZE_X = 45
+GRID_SIZE_Y = 45
 TOP_LEFT = (26,28)
 
 SCREEN_WIDTH = 678
