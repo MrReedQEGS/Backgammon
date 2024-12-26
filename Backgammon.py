@@ -128,7 +128,9 @@ def OneSecondCallback():
 
 def DiceCallback():
     global diceRolling,myDiceTimer
+    print("here")
     myDiceTimer.cancel()
+    myDiceTimer = None
     #Turn off the dice timer!
     diceRolling = False
 
@@ -143,7 +145,7 @@ if(myOneSecondTimer == None):
 #Dice callback timer
 DELAY_DICE = 0.5
 myDiceTimer = None
-    
+
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
@@ -338,7 +340,6 @@ def UndoButtonCallback():
     
 def RollButtonCallback():
     global diceRolling,myDiceTimer
-    myDiceTimer = None
     myDiceTimer = perpetualTimer(DELAY_DICE,DiceCallback)
     myDiceTimer.start()
     diceRolling = True
