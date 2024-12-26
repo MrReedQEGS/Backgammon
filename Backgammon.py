@@ -31,21 +31,24 @@ from BackgammonClasses import Piece
 EMPTY_SQUARE = 0
 BLACK_PIECE = 1
 WHITE_PIECE = 2
-theGameGrid = MyGameGrid(8,8,[EMPTY_SQUARE,BLACK_PIECE,WHITE_PIECE],0)
+GAMECOLS = 16
+GAMEROWS = 20
+PIECESIZE = 25
+theGameGrid = MyGameGrid(GAMECOLS,GAMECOLS,[EMPTY_SQUARE,BLACK_PIECE,WHITE_PIECE],0)
 
 RIGHT_MOUSE_BUTTON = 3
 
 DEBUG_ON = False
 
-GRID_SIZE_X = 45
-GRID_SIZE_Y = 45
-TOP_LEFT = (26,28)
+GRID_SIZE_X = 41
+GRID_SIZE_Y = 28
+TOP_LEFT = (33,40)
 
 SCREEN_WIDTH = 678
-SCREEN_HEIGHT = 504
+SCREEN_HEIGHT = 645
 
-BUTTON_X_VALUE = 586
-BUTTON_Y_VALUE  = 472
+BUTTON_X_VALUE = 587
+BUTTON_Y_VALUE  = 614
 
 gridLinesOn = False
 
@@ -130,12 +133,12 @@ def LoadImages():
     #Load an image with a white background and set the white to transparent.
     #Will only work if the background is all properly white 255,255,255
     player1PieceImage = pygame.image.load(player1PieceImageName)
-    player1PieceImage = pygame.transform.scale(player1PieceImage, (43, 43))  #change size first before doing alpha things
+    player1PieceImage = pygame.transform.scale(player1PieceImage, (PIECESIZE, PIECESIZE))  #change size first before doing alpha things
     player1PieceImage.set_colorkey((255,255,255))
     player1PieceImage.convert_alpha()
 
     player2PieceImage = pygame.image.load(player2PieceImageName)
-    player2PieceImage = pygame.transform.scale(player2PieceImage, (43, 43))  #change size first before doing alpha things
+    player2PieceImage = pygame.transform.scale(player2PieceImage, (PIECESIZE, PIECESIZE))  #change size first before doing alpha things
     player2PieceImage.set_colorkey((255,255,255))
     player2PieceImage.convert_alpha()
     
@@ -203,7 +206,7 @@ def HandleInput(running):
                 pygame.mixer.Sound.play(clickSound)
                 somePos = draggingPiece.GetPos()
 
-                dropLocation = [TOP_LEFT[0] + currentSquare[0]*GRID_SIZE_X+5,TOP_LEFT[1] + currentSquare[1]*GRID_SIZE_Y+5]
+                dropLocation = [TOP_LEFT[0] + currentSquare[0]*GRID_SIZE_X+7,TOP_LEFT[1] + currentSquare[1]*GRID_SIZE_Y+2]
                 draggingPiece.SetPos(dropLocation)
                 draggingPiece = None
                   
@@ -227,27 +230,29 @@ def InfoButtonCallback():
     gridLinesOn = not gridLinesOn
 
 def DrawGreenLinesOverTheBoard(width): 
+    
     if(gridLinesOn):
-        for i in range(9):
-            pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0]+i*GRID_SIZE_X, TOP_LEFT[1]),(TOP_LEFT[0]+i*GRID_SIZE_X, TOP_LEFT[0] + 8*GRID_SIZE_Y),width)
-        for i in range(9):
-            pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0], 27+i*GRID_SIZE_Y),(TOP_LEFT[0]+8*GRID_SIZE_X, TOP_LEFT[1]+i*GRID_SIZE_Y),width)
+        for i in range(GAMECOLS):
+            pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0]+i*GRID_SIZE_X, TOP_LEFT[1]),(TOP_LEFT[0]+i*GRID_SIZE_X, TOP_LEFT[1] + (GAMEROWS-1)*GRID_SIZE_Y),width)
+        for i in range(GAMEROWS):
+            pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0], TOP_LEFT[1]+i*GRID_SIZE_Y),(TOP_LEFT[0]+(GAMECOLS-1)*GRID_SIZE_X, TOP_LEFT[1]+i*GRID_SIZE_Y),width)
 
 def PutPiecesInTheBox():
     global allPieces
     allPieces = []
-    for i in range(8):
-        someGamePiece = Piece(player1PieceImage,[30+GRID_SIZE_X*9, 33+GRID_SIZE_Y*i],surface)
+    for i in range(12):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+6*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
         allPieces.append(someGamePiece)
-    for i in range(4):
-        someGamePiece = Piece(player1PieceImage,[30+GRID_SIZE_X*10, 33+GRID_SIZE_Y*i],surface)
+    for i in range(3):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
         allPieces.append(someGamePiece)
-    for i in range(4):
-        someGamePiece = Piece(player2PieceImage,[30+GRID_SIZE_X*10, 33+GRID_SIZE_Y*(4+i)],surface)
+    for i in range(3):
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7*GRID_SIZE_X+7, TOP_LEFT[1] + (i+3)*GRID_SIZE_Y+2],surface)
         allPieces.append(someGamePiece)
-    for i in range(8):
-        someGamePiece = Piece(player2PieceImage,[30+GRID_SIZE_X*11, 33+GRID_SIZE_Y*i],surface)
+    for i in range(12):
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+8*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface)
         allPieces.append(someGamePiece)
+   
     
     
 
