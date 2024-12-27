@@ -51,7 +51,7 @@ TOP_LEFT = (33,40)
 SCREEN_WIDTH = 678
 SCREEN_HEIGHT = 645
 
-BUTTON_X_VALUE = 587
+BUTTON_X_VALUE = 557
 BUTTON_Y_VALUE  = 614
 
 PLAYER_SIDE_PIECE_HEIGHT = 8
@@ -86,6 +86,8 @@ infoImageName = "./images/Info.jpg"
 infoImageGreyName = "./images/InfoGrey.jpg"
 rollImageName = "./images/Roll.jpg"
 rollImageGreyName = "./images/RollGrey.jpg"
+restartImageName = "./images/Restart.jpg"
+restartImageGreyName = "./images/RestartGrey.jpg"
 
 player1PieceImageName = "./images/player1Piece.png"
 player1SidePieceImageName = "./images/player1PieceSide.png"
@@ -181,7 +183,7 @@ def LoadImages():
     global infoImage,infoGreyImage,player1PieceImage,player2PieceImage
     global dice1Image,dice2Image,dice3Image,dice4Image,dice5Image,dice6Image
     global currentFirstDiceImage,currentSecondDiceImage,diceList,rollImage,rollGreyImage
-    global player1PieceSideImage,player2PieceSideImage
+    global player1PieceSideImage,player2PieceSideImage,restartImage,restartGreyImage
  
     backImage = pygame.image.load(backImageName).convert()
 
@@ -217,7 +219,9 @@ def LoadImages():
     infoGreyImage = pygame.image.load(infoImageGreyName).convert()
     rollImage = pygame.image.load(rollImageName).convert()
     rollGreyImage = pygame.image.load(rollImageGreyName).convert()
-
+    restartImage = pygame.image.load(restartImageName).convert()
+    restartGreyImage = pygame.image.load(restartImageGreyName).convert()
+    
     #dice time!
     dice1Image = pygame.image.load(dice1ImageName).convert_alpha()
     dice2Image = pygame.image.load(dice2ImageName).convert_alpha()
@@ -332,6 +336,7 @@ def HandleInput(running):
 def UndoButtonCallback():
     print("undo pressed...")
 
+def restartButtonCallback():
     #Use a TKINTER message box :)
     #Turn events off and then back on to stop pygame picking up the mouse click too!
     pygame.event.set_blocked(pygame.MOUSEBUTTONUP) 
@@ -416,10 +421,15 @@ LoadImages()
 
 SetRandomDiceAngleAndPos()
 
-theUndoButton = MyClickableImageButton(BUTTON_X_VALUE + 30*2,BUTTON_Y_VALUE,undoImage,undoGreyImage,surface,UndoButtonCallback)
-theMuteButton = MyClickableImageButton(BUTTON_X_VALUE + 30,BUTTON_Y_VALUE,muteImage,muteGreyImage,surface,MuteButtonCallback)
-theInfoButton = MyClickableImageButton(BUTTON_X_VALUE,BUTTON_Y_VALUE,infoImage,infoGreyImage,surface,InfoButtonCallback)
+theRestartButton = MyClickableImageButton(BUTTON_X_VALUE,BUTTON_Y_VALUE,restartImage,restartGreyImage,surface,restartButtonCallback)
+theInfoButton = MyClickableImageButton(BUTTON_X_VALUE+ 30,BUTTON_Y_VALUE,infoImage,infoGreyImage,surface,InfoButtonCallback)
+theMuteButton = MyClickableImageButton(BUTTON_X_VALUE + 30*2,BUTTON_Y_VALUE,muteImage,muteGreyImage,surface,MuteButtonCallback)
+theUndoButton = MyClickableImageButton(BUTTON_X_VALUE + 30*3,BUTTON_Y_VALUE,undoImage,undoGreyImage,surface,UndoButtonCallback)
+
 theRollButton = MyClickableImageButton(302,BUTTON_Y_VALUE,rollImage,rollGreyImage,surface,RollButtonCallback)
+
+
+restartImage
 
 allPieces = []
 PutPiecesInTheStartPositions()
@@ -434,6 +444,7 @@ while running:
 
     DrawGreenLinesOverTheBoard(3)
 
+    theRestartButton.DrawSelf()
     theUndoButton.DrawSelf()
     theMuteButton.DrawSelf()
     theInfoButton.DrawSelf()
