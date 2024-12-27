@@ -22,7 +22,7 @@ from UsefulClasses import perpetualTimer,MyGameGrid,MyClickableImageButton
 import tkinter
 from tkinter import messagebox
 
-from BackgammonClasses import Piece
+from BackgammonClasses import Piece,BackgammonGameGrid
 
 ##############################################################################
 # VARIABLES
@@ -54,11 +54,13 @@ SCREEN_HEIGHT = 645
 BUTTON_X_VALUE = 557
 BUTTON_Y_VALUE  = 614
 
+theGameGrid = BackgammonGameGrid(GAMEROWS,GAMECOLS,[0,1,2],0)
+
 PLAYER_SIDE_PIECE_HEIGHT = 8
-player1PiecesOnSide = 0
+#player1PiecesOnSide = 0
 PLAYER1_SIDE_PIECE_X = 352
 PLAYER1_SIDE_PIECE_Y = 358
-player2PiecesOnSide = 0
+#player2PiecesOnSide = 0
 PLAYER2_SIDE_PIECE_X = 298
 
 gridLinesOn = False
@@ -253,7 +255,7 @@ def WhatSquareAreWeIn(aPosition):
 
 def HandleInput(running):
     
-    global draggingPiece,player1PiecesOnSide,player2PiecesOnSide
+    global draggingPiece
 
     for event in pygame.event.get():
 
@@ -276,16 +278,16 @@ def HandleInput(running):
                  #if it is a black piece the check we are not trying to put it on its side
                 if(currentMousePos[0]>=350 and currentMousePos[0]<=380 and
                 currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
-                    if(player1PiecesOnSide > 0):
-                        player1PiecesOnSide = player1PiecesOnSide - 1
+                    if(theGameGrid.GddSidePieceNum(1) > 0):
+                        theGameGrid.RemoveSidePiece(1)
 
                         someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player1")
                         allPieces.append(someGamePiece)
                         draggingPiece = someGamePiece
                 elif(currentMousePos[0]>=296 and currentMousePos[0]<=327 and
                 currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
-                    if(player2PiecesOnSide > 0):
-                        player2PiecesOnSide = player2PiecesOnSide - 1
+                    if(theGameGrid.GddSidePieceNum(2) > 0):
+                        theGameGrid.RemoveSidePiece(2)
 
                         someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player2")
                         allPieces.append(someGamePiece)
@@ -315,9 +317,9 @@ def HandleInput(running):
                 if(currentMousePos[0]>=286 and currentMousePos[0]<=410 and
                 currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
                     if(draggingPiece._player == "player1"):
-                        player1PiecesOnSide = player1PiecesOnSide + 1
+                        theGameGrid.AddSidePiece(1)
                     else:
-                        player2PiecesOnSide = player2PiecesOnSide + 1
+                        theGameGrid.AddSidePiece(2)
                     
                     allPieces.remove(draggingPiece)
 
@@ -373,12 +375,10 @@ def DrawGreenLinesOverTheBoard(width):
             pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0], TOP_LEFT[1]+i*GRID_SIZE_Y),(TOP_LEFT[0]+(GAMECOLS-1)*GRID_SIZE_X, TOP_LEFT[1]+i*GRID_SIZE_Y),width)
 
 def PutPiecesInTheStartPositions():
-    global allPieces,player1PiecesOnSide,player2PiecesOnSide
+    global allPieces
     allPieces = []
 
-    player1PiecesOnSide = 0
-    player2PiecesOnSide = 0
-
+    theGameGrid.ResetSidePieces()
 
     for i in range(5):
         someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player2")
@@ -448,10 +448,10 @@ while running:
     theRollButton.DrawSelf()
 
     #Draw the pieces that are on their side
-    for i in range(player1PiecesOnSide):
+    for i in range(theGameGrid.GddSidePieceNum(1)):
         surface.blit(player1PieceSideImage, (PLAYER1_SIDE_PIECE_X, PLAYER1_SIDE_PIECE_Y-i*(PLAYER_SIDE_PIECE_HEIGHT+2)))
 
-    for i in range(player2PiecesOnSide):
+    for i in range(theGameGrid.GddSidePieceNum(2)):
         surface.blit(player2PieceSideImage, (PLAYER2_SIDE_PIECE_X, PLAYER1_SIDE_PIECE_Y-i*(PLAYER_SIDE_PIECE_HEIGHT+2)))
 
     running = HandleInput(running)
