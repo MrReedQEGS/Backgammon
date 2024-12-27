@@ -32,12 +32,6 @@ APP_NAME = "Backgammon"
 COPYRIGHT_MESSAGE = "Mark Reed (c) 2024"
 WINDOW_TEXT = APP_NAME + " - " + COPYRIGHT_MESSAGE
 
-#CREATE THE EMPTY GAME GRID OBJECT
-EMPTY_SQUARE = 0
-BLACK_PIECE = 1
-WHITE_PIECE = 2
-GAMECOLS = 16
-GAMEROWS = 20
 PIECESIZE = 25
 
 RIGHT_MOUSE_BUTTON = 3
@@ -54,7 +48,12 @@ SCREEN_HEIGHT = 645
 BUTTON_X_VALUE = 557
 BUTTON_Y_VALUE  = 614
 
-theGameGrid = BackgammonGameGrid(GAMEROWS,GAMECOLS,[0,1,2],0)
+GAMECOLS = 15
+GAMEROWS = 19
+EMPTY_SQUARE = 0
+PLAYER1 = 1
+PLAYER2 = 2
+theGameGrid = BackgammonGameGrid(GAMEROWS,GAMECOLS,[EMPTY_SQUARE,PLAYER1,PLAYER2],0)
 
 PLAYER_SIDE_PIECE_HEIGHT = 8
 #player1PiecesOnSide = 0
@@ -251,6 +250,15 @@ def WhatSquareAreWeIn(aPosition):
         print("Col  =  {}".format(col))
         print("row  =  {}".format(row))
 
+    if(row > GAMEROWS):
+        row = GAMEROWS
+    if(row < 0):
+        row = 0
+    if(col > GAMECOLS):
+        col = GAMECOLS
+    if(col < 0):
+        col = 0
+
     return col,row
 
 def HandleInput(running):
@@ -264,47 +272,42 @@ def HandleInput(running):
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             currentMousePos = pygame.mouse.get_pos()
-            #print(currentMousePos)
-            
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT_MOUSE_BUTTON:
-                #print ("You pressed the right mouse button")
-                for piece in allPieces:
-                    if(piece.ClickedOnMe(currentMousePos)):
-                        piece._king = not piece._king
+
+            #did we click on the "side area"?
+            #If so then remove a piece from the side area and put it on the mouse cursor ready to drop
+                #if it is a black piece the check we are not trying to put it on its side
+            if(currentMousePos[0]>=350 and currentMousePos[0]<=380 and
+            currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
+                if(theGameGrid.AddSidePieceNum(1) > 0):
+                    theGameGrid.RemoveSidePiece(1)
+
+                    someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,PLAYER1)
+                    allPieces.append(someGamePiece)
+                    draggingPiece = someGamePiece
+            elif(currentMousePos[0]>=296 and currentMousePos[0]<=327 and
+            currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
+                if(theGameGrid.AddSidePieceNum(2) > 0):
+                    theGameGrid.RemoveSidePiece(2)
+
+                    someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,PLAYER2)
+                    allPieces.append(someGamePiece)
+                    draggingPiece = someGamePiece
+                
             else:
 
-                #did we click on the "side area"?
-                #If so then remove a piece from the side area and put it on the mouse cursor ready to drop
-                 #if it is a black piece the check we are not trying to put it on its side
-                if(currentMousePos[0]>=350 and currentMousePos[0]<=380 and
-                currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
-                    if(theGameGrid.GddSidePieceNum(1) > 0):
-                        theGameGrid.RemoveSidePiece(1)
+                #did we click on a piece?
+                for piece in allPieces:
+                    if(piece.ClickedOnMe(currentMousePos)):
+                        draggingPiece = piece
+                        #The last piece in the allpieces list is draw last, so move the dragged one to last
+                        #in the list to make it draw on top of every other piece as you drag it...simples!
+                        allPieces.remove(draggingPiece)
+                        allPieces.append(draggingPiece)
 
-                        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player1")
-                        allPieces.append(someGamePiece)
-                        draggingPiece = someGamePiece
-                elif(currentMousePos[0]>=296 and currentMousePos[0]<=327 and
-                currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
-                    if(theGameGrid.GddSidePieceNum(2) > 0):
-                        theGameGrid.RemoveSidePiece(2)
+                        #Remove the piece from the game grid and replace it with a zero...
+                        currentSquare = WhatSquareAreWeIn(currentMousePos)
+                        theGameGrid.SetGridItem(currentSquare,EMPTY_SQUARE)           
 
-                        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player2")
-                        allPieces.append(someGamePiece)
-                        draggingPiece = someGamePiece
-                    
-                else:
-
-                    #did we click on a piece?
-                    for piece in allPieces:
-                        if(piece.ClickedOnMe(currentMousePos)):
-                            draggingPiece = piece
-                            #The last piece in the allpieces list is draw last, so move the dragged one to last
-                            #in the list to make it draw on top of every other piece as you drag it...simples!
-                            allPieces.remove(draggingPiece)
-                            allPieces.append(draggingPiece)
-
-           
         elif event.type == pygame.MOUSEBUTTONUP:
             currentMousePos = pygame.mouse.get_pos()
             currentSquare = WhatSquareAreWeIn(currentMousePos)
@@ -316,19 +319,22 @@ def HandleInput(running):
                 #if it is a black piece the check we are not trying to put it on its side
                 if(currentMousePos[0]>=286 and currentMousePos[0]<=410 and
                 currentMousePos[1] >= 205 and  currentMousePos[1] <= 370):
-                    if(draggingPiece._player == "player1"):
-                        theGameGrid.AddSidePiece(1)
-                    else:
-                        theGameGrid.AddSidePiece(2)
-                    
+                    theGameGrid.AddSidePiece(draggingPiece._player)
                     allPieces.remove(draggingPiece)
 
                 else:
-                    pygame.mixer.Sound.play(clickSound)
-                    dropLocation = [TOP_LEFT[0] + currentSquare[0]*GRID_SIZE_X+7,TOP_LEFT[1] + currentSquare[1]*GRID_SIZE_Y+2]
-                    draggingPiece.SetPos(dropLocation)
+                    #We are dropping it on the board.  If it is on a column then it should go at the base of that column!
 
+                    dropLocation = [TOP_LEFT[0] + currentSquare[0]*GRID_SIZE_X+7,TOP_LEFT[1]+ currentSquare[1]*GRID_SIZE_Y+2]
+                    draggingPiece.SetPos(dropLocation)
+                    
+                
+                    theGameGrid.SetGridItem(currentSquare,draggingPiece._player)
+
+                pygame.mixer.Sound.play(clickSound)
                 draggingPiece = None
+
+            theGameGrid.DebugPrintSelf()
                   
     return running
 
@@ -369,45 +375,57 @@ def InfoButtonCallback():
 def DrawGreenLinesOverTheBoard(width): 
     
     if(gridLinesOn):
-        for i in range(GAMECOLS):
-            pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0]+i*GRID_SIZE_X, TOP_LEFT[1]),(TOP_LEFT[0]+i*GRID_SIZE_X, TOP_LEFT[1] + (GAMEROWS-1)*GRID_SIZE_Y),width)
-        for i in range(GAMEROWS):
-            pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0], TOP_LEFT[1]+i*GRID_SIZE_Y),(TOP_LEFT[0]+(GAMECOLS-1)*GRID_SIZE_X, TOP_LEFT[1]+i*GRID_SIZE_Y),width)
+        for i in range(GAMECOLS+1):
+            pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0]+i*GRID_SIZE_X, TOP_LEFT[1]),(TOP_LEFT[0]+i*GRID_SIZE_X, TOP_LEFT[1] + (GAMEROWS)*GRID_SIZE_Y),width)
+        for i in range(GAMEROWS+1):
+            pygame.draw.line(surface,COL_GREEN,(TOP_LEFT[0], TOP_LEFT[1]+i*GRID_SIZE_Y),(TOP_LEFT[0]+(GAMECOLS)*GRID_SIZE_X, TOP_LEFT[1]+i*GRID_SIZE_Y),width)
 
 def PutPiecesInTheStartPositions():
     global allPieces
     allPieces = []
 
     theGameGrid.ResetSidePieces()
+    theGameGrid.BlankTheGrid()
 
     for i in range(5):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player2")
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,PLAYER2)
         allPieces.append(someGamePiece)
-    for i in range(2):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player2")
-        allPieces.append(someGamePiece)
-    for i in range(3):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i+16)*GRID_SIZE_Y+2],surface,"player2")
-        allPieces.append(someGamePiece)
-    for i in range(5):
-        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface,"player2")
-        allPieces.append(someGamePiece)
-
-    for i in range(3):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player1")
-        allPieces.append(someGamePiece)
-
-    for i in range(5):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,"player1")
-        allPieces.append(someGamePiece)
-
-    for i in range(5):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface,"player1")
-        allPieces.append(someGamePiece)
+        theGameGrid.SetGridItem((0,i),PLAYER2)
 
     for i in range(2):
-        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i+17)*GRID_SIZE_Y+2],surface,"player1")
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,PLAYER2)
         allPieces.append(someGamePiece)
+        theGameGrid.SetGridItem((14,i),PLAYER2)
+
+    for i in range(3):
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i+16)*GRID_SIZE_Y+2],surface,PLAYER2)
+        allPieces.append(someGamePiece)
+        theGameGrid.SetGridItem((4,i+16),PLAYER2)
+
+    for i in range(5):
+        someGamePiece = Piece(player2PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface,PLAYER2)
+        allPieces.append(someGamePiece)
+        theGameGrid.SetGridItem((9,i+14),PLAYER2)
+
+    for i in range(3):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+4*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,PLAYER1)
+        allPieces.append(someGamePiece)
+        theGameGrid.SetGridItem((4,i),PLAYER1)
+
+    for i in range(5):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+9*GRID_SIZE_X+7, TOP_LEFT[1] + (i)*GRID_SIZE_Y+2],surface,PLAYER1)
+        allPieces.append(someGamePiece)
+        theGameGrid.SetGridItem((9,i),PLAYER1)
+
+    for i in range(5):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+7, TOP_LEFT[1] + (i+14)*GRID_SIZE_Y+2],surface,PLAYER1)
+        allPieces.append(someGamePiece)
+        theGameGrid.SetGridItem((0,i+14),PLAYER1)
+
+    for i in range(2):
+        someGamePiece = Piece(player1PieceImage,[TOP_LEFT[0]+14*GRID_SIZE_X+7, TOP_LEFT[1] + (i+17)*GRID_SIZE_Y+2],surface,PLAYER1)
+        allPieces.append(someGamePiece)
+        theGameGrid.SetGridItem((14,i+17),PLAYER1)
 
 ##############################################################################
 # MAIN
@@ -448,10 +466,10 @@ while running:
     theRollButton.DrawSelf()
 
     #Draw the pieces that are on their side
-    for i in range(theGameGrid.GddSidePieceNum(1)):
+    for i in range(theGameGrid.AddSidePieceNum(PLAYER1)):
         surface.blit(player1PieceSideImage, (PLAYER1_SIDE_PIECE_X, PLAYER1_SIDE_PIECE_Y-i*(PLAYER_SIDE_PIECE_HEIGHT+2)))
 
-    for i in range(theGameGrid.GddSidePieceNum(2)):
+    for i in range(theGameGrid.AddSidePieceNum(PLAYER2)):
         surface.blit(player2PieceSideImage, (PLAYER2_SIDE_PIECE_X, PLAYER1_SIDE_PIECE_Y-i*(PLAYER_SIDE_PIECE_HEIGHT+2)))
 
     running = HandleInput(running)

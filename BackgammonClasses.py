@@ -4,6 +4,7 @@ from UsefulClasses import MyGameGrid
 # CLASSES
 ##############################################################################
 class BackgammonGameGrid(MyGameGrid):
+
     def __init__(self,newRows,newCols,newListOfAllowedCellItems,newPosOfBlankItem):
         super().__init__(newRows,newCols,newListOfAllowedCellItems,newPosOfBlankItem) 
         self._player1PiecesOnSide = 0
@@ -26,12 +27,17 @@ class BackgammonGameGrid(MyGameGrid):
         else:
             self._player2PiecesOnSide = self._player2PiecesOnSide - 1
 
-    def GddSidePieceNum(self,someSide):
+    def AddSidePieceNum(self,someSide):
         if(someSide == 1):
             return self._player1PiecesOnSide
         else:
             return self._player2PiecesOnSide
-    
+      
+    def DebugPrintSelf(self):
+        super().DebugPrintSelf()
+        print("player 1 : side pieces",self._player1PiecesOnSide)
+        print("player 2 : side pieces",self._player2PiecesOnSide)
+
 class Piece(pygame.sprite.Sprite): 
     def __init__(self, newImage, newPos,newParentSurface,newPlayer): 
         super().__init__() 
