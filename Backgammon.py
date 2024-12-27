@@ -82,8 +82,8 @@ undoImageName = "./images/Undo.jpg"
 undoImageGreyName = "./images/UndoGrey.jpg"
 muteImageName = "./images/Mute.jpg"
 muteImageGreyName = "./images/MuteGrey.jpg"
-infoImageName = "./images/Info.jpg"
-infoImageGreyName = "./images/InfoGrey.jpg"
+infoImageName = "./images/Eye.jpg"
+infoImageGreyName = "./images/EyeGrey.jpg"
 rollImageName = "./images/Roll.jpg"
 rollImageGreyName = "./images/RollGrey.jpg"
 restartImageName = "./images/Restart.jpg"
@@ -133,8 +133,7 @@ def OneSecondCallback():
     gameTime = gameTime + 1
 
 def DiceCallback():
-    global diceRolling,myDiceTimer
-    print("here")
+    global diceRolling
     myDiceTimer.Stop()
     diceRolling = False  #Turn of dice animation
 
@@ -208,9 +207,7 @@ def LoadImages():
     player2PieceSideImage = pygame.transform.scale(player2PieceSideImage, (28, PLAYER_SIDE_PIECE_HEIGHT))  #change size first before doing alpha things
     player2PieceSideImage.set_colorkey((255,255,255))
     player2PieceSideImage.convert_alpha()
-
-    
-    
+      
     undoImage = pygame.image.load(undoImageName).convert()
     undoGreyImage = pygame.image.load(undoImageGreyName).convert()
     muteImage = pygame.image.load(muteImageName).convert()
