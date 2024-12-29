@@ -10,6 +10,7 @@ class BackgammonGameGrid(MyGameGrid):
         self._player1PiecesOnSide = 0
         self._player2PiecesOnSide = 0
 
+
     def AddSidePiece(self,someSide):
         if(someSide == 1):
             self._player1PiecesOnSide = self._player1PiecesOnSide + 1

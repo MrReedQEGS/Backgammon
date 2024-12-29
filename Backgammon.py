@@ -270,6 +270,7 @@ def HandleInput(running):
         if event.type == pygame.QUIT:
             running = False
 
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             currentMousePos = pygame.mouse.get_pos()
 

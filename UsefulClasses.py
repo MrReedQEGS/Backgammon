@@ -109,6 +109,7 @@ class MyGameGrid():
         #
         # We need to access items using theGrid[y][x]
 
+
         x = theCoord[0]
         y = theCoord[1]
         return self.theGrid[y][x]
