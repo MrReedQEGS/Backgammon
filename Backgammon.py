@@ -1,5 +1,5 @@
 ##############################################################################
-# DETAILS - 6.10.25
+# DETAILS - 6.10.25 - This is new!!!
 #  A backgammon game using my pygame gridgame template
 #  Mr Reed - Dec 2024
 #
