@@ -1,6 +1,6 @@
 ##############################################################################
-# DETAILS
-#  A good template for a grid game of some kind
+# DETAILS - 6.10.25
+#  A backgammon game using my pygame gridgame template
 #  Mr Reed - Dec 2024
 #
 #  Sounds 
